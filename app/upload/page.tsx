@@ -1,11 +1,57 @@
+"use client";
+
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState, useEffect, useCallback } from "react";
 import { scenarios } from "@/data/scenarios";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { UploadCloud, AlertCircle, Camera, CheckCircle2 } from "lucide-react";
+import { UploadCloud, AlertCircle, Camera, CheckCircle2, X } from "lucide-react";
 
 export default function UploadPage() {
+  const router = useRouter();
+  const [selectedScenario, setSelectedScenario] = useState<string | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [progress, setProgress] = useState(0);
+
+  const handleScenarioSelect = useCallback((scenarioId: string) => {
+    setSelectedScenario(scenarioId);
+    setIsProcessing(true);
+    setProgress(0);
+  }, []);
+
+  const handleCancel = useCallback(() => {
+    setSelectedScenario(null);
+    setIsProcessing(false);
+    setProgress(0);
+  }, []);
+
+  useEffect(() => {
+    if (!isProcessing) return;
+
+    const interval = setInterval(() => {
+      setProgress((prev) => {
+        if (prev >= 100) {
+          clearInterval(interval);
+          return 100;
+        }
+        return prev + 2;
+      });
+    }, 40);
+
+    return () => clearInterval(interval);
+  }, [isProcessing]);
+
+  useEffect(() => {
+    if (progress >= 100 && selectedScenario) {
+      const timeout = setTimeout(() => {
+        router.push(`/compare?scenario=${selectedScenario}`);
+      }, 300);
+      return () => clearTimeout(timeout);
+    }
+  }, [progress, selectedScenario, router]);
+
   return (
     <main className="container mx-auto px-4 py-6 md:py-10 space-y-8 pb-24 md:pb-10 max-w-3xl">
       {/* Stepper Indicator */}
@@ -49,35 +95,63 @@ export default function UploadPage() {
         </div>
       </section>
 
-      {/* Scenario Selector */}
-      <section className="space-y-4">
-        <h2 className="text-lg font-bold text-slate-900">Select a Sample Product</h2>
-        <div className="grid gap-3">
-          {scenarios.map((scenario) => (
-            <Link
-              key={scenario.id}
-              href={`/compare?scenario=${scenario.id}`}
-              data-testid={`scenario-${scenario.id}`}
-              className="block"
+      {/* Processing State */}
+      {isProcessing && (
+        <section data-testid="processing-state" className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-bold text-slate-900">Processing your product...</h2>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={handleCancel}
+              data-testid="cancel-processing"
+              className="text-slate-500 hover:text-red-500"
             >
-              <Card className="hover:border-primary hover:shadow-md transition-all rounded-xl cursor-pointer bg-white group">
-                <CardContent className="p-4 flex items-center justify-between">
-                  <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 rounded-lg bg-pink-100 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
-                      <Camera className="w-6 h-6" />
+              <X className="w-4 h-4 mr-1" />
+              Cancel
+            </Button>
+          </div>
+          <div className="space-y-2">
+            <Progress value={progress} className="h-3" data-testid="processing-progress" />
+            <p className="text-sm text-slate-500 text-right">{progress}%</p>
+          </div>
+          <p className="text-sm text-slate-500">
+            Analyzing product pricing and comparing with alternatives...
+          </p>
+        </section>
+      )}
+
+      {/* Scenario Selector */}
+      {!isProcessing && (
+        <section className="space-y-4">
+          <h2 className="text-lg font-bold text-slate-900">Select a Sample Product</h2>
+          <div className="grid gap-3">
+            {scenarios.map((scenario) => (
+              <button
+                key={scenario.id}
+                onClick={() => handleScenarioSelect(scenario.id)}
+                data-testid={`scenario-${scenario.id}`}
+                className="block w-full text-left"
+              >
+                <Card className="hover:border-primary hover:shadow-md transition-all rounded-xl cursor-pointer bg-white group">
+                  <CardContent className="p-4 flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      <div className="w-12 h-12 rounded-lg bg-pink-100 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+                        <Camera className="w-6 h-6" />
+                      </div>
+                      <div>
+                        <p className="font-semibold text-slate-900">{scenario.label}</p>
+                        <p className="text-sm text-slate-500">View comparison result</p>
+                      </div>
                     </div>
-                    <div>
-                      <p className="font-semibold text-slate-900">{scenario.label}</p>
-                      <p className="text-sm text-slate-500">View comparison result</p>
-                    </div>
-                  </div>
-                  <CheckCircle2 className="w-5 h-5 text-slate-300 group-hover:text-primary transition-colors" />
-                </CardContent>
-              </Card>
-            </Link>
-          ))}
-        </div>
-      </section>
+                    <CheckCircle2 className="w-5 h-5 text-slate-300 group-hover:text-primary transition-colors" />
+                  </CardContent>
+                </Card>
+              </button>
+            ))}
+          </div>
+        </section>
+      )}
     </main>
   );
 }

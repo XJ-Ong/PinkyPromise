@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { useState } from "react";
 import { scenarios } from "@/data/scenarios";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -13,15 +16,16 @@ export default function ComparePage({
 }) {
   const scenarioId = searchParams.scenario as "A" | "B" | "C" | undefined;
   const scenario = scenarios.find((s) => s.id === scenarioId);
+  const [showCommunityConfirmation, setShowCommunityConfirmation] = useState(false);
 
   if (!scenario) {
     return (
       <main className="container mx-auto px-4 py-10 flex flex-col items-center justify-center min-h-[50vh]">
         <SearchX className="w-16 h-16 text-slate-300 mb-4" />
         <h1 className="text-xl font-bold text-slate-900 mb-4">No scenario selected</h1>
-        <Button asChild variant="outline">
-          <Link href="/upload">Go back to Upload</Link>
-        </Button>
+        <Link href="/upload" className="inline-flex items-center justify-center rounded-lg border border-border bg-background px-4 py-2 text-sm font-medium hover:bg-muted transition-colors">
+          Go back to Upload
+        </Link>
       </main>
     );
   }
@@ -120,12 +124,10 @@ export default function ComparePage({
         </div>
 
         {/* CTA */}
-        <Button asChild size="lg" className="w-full sm:w-auto sm:mx-auto flex rounded-full h-12">
-          <Link href={`/report?context=${scenario.id}`} data-testid="report-cta">
-            <Flag className="w-5 h-5 mr-2" />
-            Report a Better Price
-          </Link>
-        </Button>
+        <Link href={`/report?context=${scenario.id}`} data-testid="report-cta" className="inline-flex items-center justify-center w-full sm:w-auto sm:mx-auto rounded-full h-12 bg-primary text-primary-foreground hover:bg-primary/80 font-semibold transition-colors">
+          <Flag className="w-5 h-5 mr-2" />
+          Report a Better Price
+        </Link>
       </main>
     );
   }
@@ -214,10 +216,23 @@ export default function ComparePage({
         </div>
 
         {/* CTA */}
-        <Button data-testid="add-to-community" size="lg" className="w-full sm:w-auto sm:mx-auto flex rounded-full h-12 bg-success hover:bg-green-700 text-white">
-          <ShieldCheck className="w-5 h-5 mr-2" />
-          Add to Community Hub
-        </Button>
+        {showCommunityConfirmation ? (
+          <div data-testid="community-confirmation" className="bg-green-50 border border-green-200 rounded-xl p-4 text-center">
+            <CheckCircle2 className="w-8 h-8 text-success mx-auto mb-2" />
+            <p className="font-semibold text-green-800">Added to Community Hub!</p>
+            <p className="text-sm text-green-600">Thanks for sharing this fair price find.</p>
+          </div>
+        ) : (
+          <Button 
+            data-testid="add-to-community" 
+            size="lg" 
+            className="w-full sm:w-auto sm:mx-auto flex rounded-full h-12 bg-success hover:bg-green-700 text-white"
+            onClick={() => setShowCommunityConfirmation(true)}
+          >
+            <ShieldCheck className="w-5 h-5 mr-2" />
+            Add to Community Hub
+          </Button>
+        )}
       </main>
     );
   }
@@ -246,12 +261,10 @@ export default function ComparePage({
         </div>
 
         {/* CTA */}
-        <Button asChild size="lg" className="w-full sm:w-auto sm:mx-auto flex rounded-full h-12">
-          <Link href={`/report?context=${scenario.id}`} data-testid="report-product-cta">
-            <Flag className="w-5 h-5 mr-2" />
-            Report This Product
-          </Link>
-        </Button>
+        <Link href={`/report?context=${scenario.id}`} data-testid="report-product-cta" className="inline-flex items-center justify-center w-full sm:w-auto sm:mx-auto rounded-full h-12 bg-primary text-primary-foreground hover:bg-primary/80 font-semibold transition-colors">
+          <Flag className="w-5 h-5 mr-2" />
+          Report This Product
+        </Link>
       </main>
     );
   }
