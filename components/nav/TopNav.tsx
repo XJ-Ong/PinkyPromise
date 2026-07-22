@@ -1,12 +1,34 @@
+import Link from "next/link";
+
 export default function TopNav() {
   return (
-    <nav>
+    <nav data-testid="top-nav">
       <ul>
-        <li><a href="/">Home</a></li>
-        <li><a href="/upload">Upload</a></li>
-        <li><a href="/compare">Compare</a></li>
-        <li><a href="/community">Community</a></li>
-        <li><a href="/profile">Profile</a></li>
+        <li>
+          <Link href="/" data-testid="nav-home">
+            Home
+          </Link>
+        </li>
+        <li>
+          <Link href="/upload" data-testid="nav-upload">
+            Upload
+          </Link>
+        </li>
+        <li>
+          <Link href="/compare" data-testid="nav-compare">
+            Compare
+          </Link>
+        </li>
+        <li>
+          <Link href="/community" data-testid="nav-community">
+            Community
+          </Link>
+        </li>
+        <li>
+          <Link href="/profile" data-testid="nav-profile">
+            Profile
+          </Link>
+        </li>
       </ul>
     </nav>
   );
