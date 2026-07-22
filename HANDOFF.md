@@ -1,174 +1,123 @@
-# PinkyPromise — Handoff Document for AGY (UI/UX Visual Implementation)
+# PinkyPromise — Handoff Document for QA & Deployment
 
 **Date:** 22 July 2026  
-**Status:** Phases 1 & 2 complete. Ready for Phase 3 (AGY's responsibility).
+**Status:** Phase 4 (Interaction Logic & State Wiring) is COMPLETE. Ready for Phase 5 (QA & Manual Testing) and Phase 6 (Deployment to Vercel).
 
 ---
 
 ## 1. Project Overview
 
-**PinkyPromise** is a "Pink Tax Checker" prototype — a frontend-only Next.js app that demonstrates detecting gender-based price discrimination (pink tax) using pre-defined scenarios. No backend, no real image recognition, no database.
-
-**Tech Stack:**
-- Next.js 16 (App Router)
-- TypeScript
-- Tailwind CSS v4
-- shadcn/ui (components in `components/ui/`)
-- lucide-react (icons)
+**PinkyPromise** is a "Pink Tax Checker" prototype built with Next.js 16 (App Router), TypeScript, Tailwind CSS v4, and shadcn/ui. 
 
 **Repository:** https://github.com/XJ-Ong/PinkyPromise  
-**Working Directory:** `/mnt/c/Data/Codes/Projects/PinkyPromise`
+**Working Directory:** `/mnt/c/Data/Codes/Projects/PinkyPromise` (or `C:\Data\Codes\Projects\PinkyPromise`)
 
 ---
 
-## 2. What Was Built (Phases 1 & 2)
+## 2. What Was Built (Phases 1-4)
 
 ### Phase 1 — Project Initialization
 - Next.js scaffolded with TypeScript, Tailwind, shadcn/ui
 - shadcn components installed: button, card, badge, dialog, input, select, progress, avatar, tabs
 - Dependencies: clsx, tailwind-merge, class-variance-authority, lucide-react, @base-ui/react
 - Folder structure created: `app/`, `components/`, `data/`, `lib/`, `public/images/`
-- Config files: `.gitignore`, `README.md`, `LICENSE` (MIT), `PROTOTYPE_SPEC.md`
-- `lib/utils.ts` with `cn()` helper
 
 ### Phase 2 — Data Layer & Routing Skeleton
+- **Data files:** scenarios.ts (3 CV scenarios), deals.ts (6 community deals), insights.ts (3 insight cards), profile.ts (mock user profile)
+- **6 Routes:** Home Dashboard, Upload & Process, Comparison Result, Report a Better Price, Community Hub, Profile
+- **Navigation:** BottomNav (mobile), TopNav (web), responsive layout switching
 
-**Data files (all static, no logic):**
-- `lib/types.ts` — TypeScript interfaces: Product, ScenarioType, Scenario, CommunityDeal, InsightCard, MockProfile
-- `data/scenarios.ts` — 3 CV scenarios:
-  - Scenario A: "Clear Pink Tax" (pink_tax, +25% markup)
-  - Scenario B: "Fair Price" (fair_price, 0% markup)
-  - Scenario C: "No Match Found" (no_match)
-- `data/deals.ts` — 6 community deals across Personal Care, Household, Clothing, Other
-- `data/insights.ts` — 3 insight cards ("Why similar products cost more", "How to compare unit prices", "Community tips")
-- `data/profile.ts` — Mock profile (Sarah Tan, 42 products checked, RM 156.50 saved)
+### Phase 3 — UI/UX Visual Implementation (by AGY)
+- **Design System:** Pink/navy color palette in `app/globals.css`
+- **Component Styling:** All screens styled with Tailwind, shadcn/ui components, and lucide-react icons
+- **Responsive:** Mobile-first design with breakpoint-based layout switching
 
-**6 Routes (all with `data-testid` attributes):**
-| Route | Screen | Key Elements |
-|-------|--------|--------------|
-| `/` | Home Dashboard | Hero card, insights section, deals preview |
-| `/upload` | Upload & Process | Stepper, dropzone, disclaimer box, 3 scenario thumbnails |
-| `/compare?scenario=A\|B\|C` | Comparison Result | Reads query param, renders 3 states (pink_tax/fair_price/no_match) |
-| `/report` | Report a Better Price | Form: product name, store, price, photo (disabled), note |
-| `/community` | Community Hub | Search bar, category filter chips, sort dropdown, deal list |
-| `/profile` | Profile | Avatar, stats, my reports list, settings |
+### Phase 4 — Interaction Logic & State Wiring (by OPENCODE)
 
-**Navigation components:**
-- `components/nav/BottomNav.tsx` — Mobile nav (visible below `md` breakpoint)
-- `components/nav/TopNav.tsx` — Web nav (visible at `md+`)
-- `app/layout.tsx` — Responsive nav switching via Tailwind `hidden md:block` / `block md:hidden`
+#### 4.1 Scenario Selection & Simulated Processing (`app/upload/page.tsx`)
+- ✅ Click scenario thumbnail to select and start processing
+- ✅ Progress bar animates from 0% to 100% over ~1.6 seconds
+- ✅ Auto-navigates to `/compare?scenario=<id>` on completion
+- ✅ Cancel button resets to upload state
+
+#### 4.2 Comparison Result Rendering (`app/compare/page.tsx`)
+- ✅ Reads `scenario` query param and displays correct state (A/B/C)
+- ✅ State A (Pink Tax): Shows pink tax badge, comparison table, savings callout, report CTA
+- ✅ State B (Fair Price): Shows fair price badge, "Add to Community Hub" with confirmation
+- ✅ State C (No Match): Shows empty state with report CTA
+- ✅ CTAs link correctly to `/report?context=<scenario-id>`
+
+#### 4.3 Report a Better Price (`app/report/page.tsx`)
+- ✅ Controlled form with React state (productName, storeName, price, note)
+- ✅ Form submission prevents default and shows success confirmation
+- ✅ Success state displays "View Community Hub" link
+- ✅ Back button navigates to previous scenario or home
+
+#### 4.4 Community Hub Filtering/Sorting (`app/community/page.tsx`)
+- ✅ Real client-side filtering by category (All, Personal Care, Household, Clothing, Other)
+- ✅ Search by product name or submitter name
+- ✅ Sort by Most Recent or Biggest Savings
+- ✅ Empty state when no deals match criteria
+- ✅ Dynamic update of deal list based on filters
+
+#### 4.5 Bug Fix
+- ✅ Fixed TypeScript build errors by replacing `asChild` Button pattern with styled Link components
+- The Button component uses @base-ui/react which doesn't support the `asChild` prop (Radix UI pattern)
 
 ---
 
 ## 3. Current Build Status
 
-- `npm run build` succeeds with no TypeScript errors
-- All routes render correctly with real data
-- All `data-testid` attributes present and unchanged
-- All changes committed to `main` branch
+- ✅ `npm run build` succeeds with zero TypeScript errors
+- ✅ All routes render correctly with full interaction logic
+- ✅ All `data-testid` attributes preserved
+- ✅ Committed and merged to `main` branch
 
 ---
 
-## 4. Your Task: Phase 3 — UI/UX Visual Implementation
+## 4. Definition of Done (Phase 4) — VERIFIED
 
-**Branch:** `ui/agy-visual-design`  
-**Spec Reference:** `PinkyPromise_Prototype_Specification.md` (full spec) and `PinkyPromise_Implementation_Plan.md` lines 324–376 (Phase 3 detailed instructions)
+- [x] Full user journey works end-to-end (Home → Upload → Select Scenario → Processing Animation → Compare Result → Report/Community Action)
+- [x] Community Hub filters and sorting visibly change the list
+- [x] No console errors during the full click-through
+- [x] `npm run build` succeeds (with zero TypeScript errors)
+- [x] Commits are merged to `main`
 
-### 4.1 Strict Scope Boundary
+---
 
-**You MUST:**
-- Add Tailwind utility classes to all elements
-- Add shadcn/ui component wrappers (Card, Badge, Dialog, Progress, etc.) around existing content
-- Add icons using `lucide-react`
-- Add images from `/public/images/`
-- Restructure JSX markup/div nesting for layout purposes
-- Preserve all `data-testid` attributes exactly as-is
-
-**You MUST NOT:**
-- Rename, remove, or restructure `data-testid` attributes or component props
-- Add or modify any `useState`/`useEffect`/business logic
-- Touch anything in `/data/`, `/lib/`, or `/app/api`
-- Introduce a new CSS framework or override Tailwind/shadcn with custom global CSS resets
-
-### 4.2 Design Tokens
-
-Derive the color palette, typography scale, and card styling from the wireframe images:
-- **Primary:** Soft pink
-- **Secondary:** Navy
-- **Backgrounds:** White/cream
-- **Cards:** Rounded corners
-- **Tax badges:** Bold red (pink tax) / green (fair price) high-contrast percentage badges
-
-Define these as Tailwind theme extensions in `tailwind.config.ts` or CSS variables in `globals.css` via shadcn's theme system. Do not hardcode one-off hex values per component.
-
-### 4.3 Responsive Implementation
-
-- **Mobile-first:** Base Tailwind classes target Mobile Based layout (bottom nav, single-column stacked cards)
-- **Web layout:** Use `md:` prefixed classes for ≥768px (top nav, 2-column dashboard grids, wider comparison)
-- Nav switching already implemented in `layout.tsx` using Tailwind `hidden md:flex` / `flex md:hidden`
-
-### 4.4 Per-Screen Styling Checklist
-
-| Screen | Styling Requirements |
-|--------|---------------------|
-| **Home Dashboard** | Hero card with tagline + CTA button, horizontally scrollable insight card feed (mobile) → grid (web), vertical deal list preview with verified badges |
-| **Upload & Process** | Stepper indicator, upload dropzone styling, **disclaimer box styled distinctly** (soft yellow/amber background, icon) above scenario thumbnails, animated progress bar |
-| **Comparison Result** | All 3 states styled per spec: pink_tax red badge, fair_price green badge, no_match empty-state illustration. Split comparison layout, savings callout, donut chart (static SVG) |
-| **Report a Better Price** | Clean form styling, success confirmation state (toast or modal) |
-| **Community Hub** | Filter chip row, sort dropdown, deal card list with verified badge emphasis, floating action button (mobile) vs inline button (web) |
-| **Profile** | Avatar, stats row, submitted-reports list reusing Community Hub card style |
-
-### 4.5 Required Commits
+## 5. Git History
 
 ```
-style(nav): implement responsive bottom/top nav switch and design tokens
-style(home): implement mobile-first Home Dashboard layout and cards
-style(upload): implement stepper, dropzone, disclaimer, and scenario cards
-style(compare): implement all 3 comparison result states and badges
-style(report): implement report form and success state styling
-style(community): implement filter/sort UI and deal card list styling
-style(profile): implement profile stats and submitted-reports styling
+aa88fa0 fix: replace asChild Button pattern with styled Link components
+5575839 feat(upload): wire scenario selection and simulated processing timer
+08b1332 style(profile): implement profile stats and submitted-reports styling
+a12b9a4 style(community): implement filter/sort UI and deal card list styling
+a09a407 style(report): implement report form and success state styling
+5a5524c style(compare): implement all 3 comparison result states and badges
+2f20eec style(upload): implement stepper, dropzone, disclaimer, and scenario cards
+ff8aa07 style(home): implement mobile-first Home Dashboard layout and cards
+544da2d style(nav): implement responsive bottom/top nav switch and design tokens
+5102769 docs: add handoff context file for AGY phase
+d95f3d8 feat(data): add static scenario, deals, insights, and profile datasets
+d3cff82 chore(init): scaffold Next.js app with TypeScript, Tailwind, shadcn/ui
 ```
 
-### 4.6 Definition of Done
-
-- [ ] Every screen visually matches the wireframes' intent (card-based, pink/navy palette, bold high-contrast tax badges) on both mobile viewport (~375px) and desktop-width viewport (~1280px)
-- [ ] Resizing the browser window shows the layout genuinely reflow (nav position changes, grid columns change) with no broken/overlapping elements
-- [ ] All `data-testid` attributes from Phase 2 are still present and unchanged
-- [ ] No new business logic/state was introduced
-- [ ] `npm run build` still succeeds with no TypeScript errors
-- [ ] Committed and merged to `main`
-
 ---
 
-## 5. Key Files for Reference
+## 6. Next Steps
 
-| File | Purpose |
-|------|---------|
-| `PinkyPromise_Prototype_Specification.md` | Full spec (238 lines) — all screens, components, data requirements |
-| `PinkyPromise_Implementation_Plan.md` | Full implementation plan (542 lines) — Phase 3 starts at line 324 |
-| `app/layout.tsx` | Root layout with responsive nav switching |
-| `app/page.tsx` | Home Dashboard |
-| `app/upload/page.tsx` | Upload & Process |
-| `app/compare/page.tsx` | Comparison Result (reads `?scenario=A\|B\|C`) |
-| `app/report/page.tsx` | Report a Better Price form |
-| `app/community/page.tsx` | Community Hub |
-| `app/profile/page.tsx` | Profile |
-| `components/nav/BottomNav.tsx` | Mobile bottom navigation |
-| `components/nav/TopNav.tsx` | Web top navigation |
-| `data/scenarios.ts` | 3 CV scenario datasets |
-| `data/deals.ts` | 6 community deals |
-| `data/insights.ts` | 3 insight cards |
-| `data/profile.ts` | Mock user profile |
-| `lib/types.ts` | TypeScript interfaces |
+### Phase 5 — QA & Manual Testing
+Refer to `PinkyPromise_Implementation_Plan.md` (Lines 432-480) for:
+- Manual test checklist
+- Cross-browser testing
+- Responsive design verification
+- Accessibility checks
 
----
-
-## 6. After You Finish (Phase 3)
-
-Once your Definition of Done is fully checked and merged to `main`:
-1. Stop — do not attempt any interactivity/logic work
-2. Tell the human it is ready to go back to OPENCODE for Phase 4 (Interaction Logic & State Wiring)
+### Phase 6 — Deployment to Vercel
+Refer to `PinkyPromise_Implementation_Plan.md` (Lines 482-520) for:
+- Vercel configuration
+- Environment variables
+- Deployment steps
 
 ---
 
@@ -176,7 +125,8 @@ Once your Definition of Done is fully checked and merged to `main`:
 
 ```bash
 cd /mnt/c/Data/Codes/Projects/PinkyPromise
-git checkout -b ui/agy-visual-design
+git checkout main
+npm install
 npm run dev
 ```
 
