@@ -14,44 +14,34 @@ export default function TopNav() {
         </Link>
         <ul className="flex items-center gap-1 sm:gap-2">
           <li>
-            <Button variant="ghost" asChild className="text-slate-600 hover:text-primary hover:bg-pink-50">
-              <Link href="/" data-testid="nav-home">
-                <Home className="w-4 h-4 mr-2" />
-                Home
-              </Link>
-            </Button>
+            <Link href="/" data-testid="nav-home" className="inline-flex items-center justify-center gap-2 rounded-lg px-2.5 py-1.5 text-sm font-medium text-slate-600 hover:text-primary hover:bg-pink-50 transition-colors">
+              <Home className="w-4 h-4" />
+              Home
+            </Link>
           </li>
           <li>
-            <Button variant="ghost" asChild className="text-slate-600 hover:text-primary hover:bg-pink-50">
-              <Link href="/upload" data-testid="nav-upload">
-                <UploadCloud className="w-4 h-4 mr-2" />
-                Upload
-              </Link>
-            </Button>
+            <Link href="/upload" data-testid="nav-upload" className="inline-flex items-center justify-center gap-2 rounded-lg px-2.5 py-1.5 text-sm font-medium text-slate-600 hover:text-primary hover:bg-pink-50 transition-colors">
+              <UploadCloud className="w-4 h-4" />
+              Upload
+            </Link>
           </li>
           <li>
-            <Button variant="ghost" asChild className="text-slate-600 hover:text-primary hover:bg-pink-50">
-              <Link href="/compare" data-testid="nav-compare">
-                <ArrowRightLeft className="w-4 h-4 mr-2" />
-                Compare
-              </Link>
-            </Button>
+            <Link href="/compare" data-testid="nav-compare" className="inline-flex items-center justify-center gap-2 rounded-lg px-2.5 py-1.5 text-sm font-medium text-slate-600 hover:text-primary hover:bg-pink-50 transition-colors">
+              <ArrowRightLeft className="w-4 h-4" />
+              Compare
+            </Link>
           </li>
           <li>
-            <Button variant="ghost" asChild className="text-slate-600 hover:text-primary hover:bg-pink-50">
-              <Link href="/community" data-testid="nav-community">
-                <Users className="w-4 h-4 mr-2" />
-                Community
-              </Link>
-            </Button>
+            <Link href="/community" data-testid="nav-community" className="inline-flex items-center justify-center gap-2 rounded-lg px-2.5 py-1.5 text-sm font-medium text-slate-600 hover:text-primary hover:bg-pink-50 transition-colors">
+              <Users className="w-4 h-4" />
+              Community
+            </Link>
           </li>
           <li>
-            <Button variant="ghost" asChild className="text-slate-600 hover:text-primary hover:bg-pink-50">
-              <Link href="/profile" data-testid="nav-profile">
-                <User className="w-4 h-4 mr-2" />
-                Profile
-              </Link>
-            </Button>
+            <Link href="/profile" data-testid="nav-profile" className="inline-flex items-center justify-center gap-2 rounded-lg px-2.5 py-1.5 text-sm font-medium text-slate-600 hover:text-primary hover:bg-pink-50 transition-colors">
+              <User className="w-4 h-4" />
+              Profile
+            </Link>
           </li>
         </ul>
       </div>

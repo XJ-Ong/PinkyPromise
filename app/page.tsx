@@ -24,12 +24,10 @@ export default function Home() {
           <CardContent className="p-6 sm:p-10 relative z-10 flex flex-col items-start gap-4">
             <h2 className="text-3xl sm:text-4xl font-bold tracking-tight max-w-md leading-tight">Fair prices for everyone.</h2>
             <p className="text-pink-50 text-base sm:text-lg mb-2 max-w-sm">Check if you&apos;re paying the pink tax on everyday products.</p>
-            <Button asChild size="lg" className="bg-white text-primary hover:bg-slate-50 font-semibold shadow-md rounded-full px-6 sm:px-8 h-12 mt-2">
-              <Link href="/upload" data-testid="hero-cta">
-                <UploadCloud className="w-5 h-5 mr-2" />
-                Upload Product to Check
-              </Link>
-            </Button>
+            <Link href="/upload" data-testid="hero-cta" className="inline-flex items-center justify-center bg-white text-primary hover:bg-slate-50 font-semibold shadow-md rounded-full px-6 sm:px-8 h-12 mt-2 transition-colors">
+              <UploadCloud className="w-5 h-5 mr-2" />
+              Upload Product to Check
+            </Link>
           </CardContent>
         </Card>
       </section>
@@ -57,11 +55,9 @@ export default function Home() {
       <section className="space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="text-xl font-bold text-slate-900">Community Deals</h2>
-          <Button variant="ghost" asChild className="text-primary hover:text-pink-600 hover:bg-pink-50 p-0 h-auto font-medium">
-            <Link href="/community" data-testid="see-all-deals">
-              See all <ChevronRight className="w-4 h-4 ml-1" />
-            </Link>
-          </Button>
+          <Link href="/community" data-testid="see-all-deals" className="inline-flex items-center text-primary hover:text-pink-600 hover:bg-pink-50 p-0 h-auto font-medium transition-colors">
+            See all <ChevronRight className="w-4 h-4 ml-1" />
+          </Link>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {deals.slice(0, 4).map((deal) => (
