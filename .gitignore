@@ -42,3 +42,9 @@ next-env.d.ts
 
 # logs
 *.log
+
+# internal docs
+PinkyPromise_Implementation_Plan.md
+PinkyPromise_Prototype_Specification.md
+PROTOTYPE_SPEC.md
+HANDOFF.md
