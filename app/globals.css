@@ -89,3 +89,19 @@
     @apply bg-background text-foreground;
   }
 }
+
+@utility pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+@utility hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@utility touch-manipulation {
+  touch-action: manipulation;
+}

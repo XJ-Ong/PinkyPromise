@@ -48,3 +48,7 @@ PinkyPromise_Implementation_Plan.md
 PinkyPromise_Prototype_Specification.md
 PROTOTYPE_SPEC.md
 HANDOFF.md
+
+# patches and tool state
+changes.patch
+.omo/

@@ -1,3 +1,5 @@
+"use client";
+
 import { mockProfile } from "@/data/profile";
 import { deals } from "@/data/deals";
 import { Card, CardContent } from "@/components/ui/card";
@@ -23,15 +25,15 @@ export default function ProfilePage() {
           </Avatar>
           <div>
             <h1 className="text-2xl font-bold text-slate-900">{mockProfile.name}</h1>
-            <p className="text-sm text-slate-500 font-medium">Member since {mockProfile.memberSince}</p>
+            <p className="text-sm text-slate-500 font-medium">Member since {new Date(mockProfile.memberSince).toLocaleDateString("en-MY", { year: "numeric", month: "long" })}</p>
           </div>
         </section>
 
         <section data-testid="settings" className="flex gap-2">
-          <Button variant="outline" size="icon" className="rounded-full text-slate-600">
+          <Button variant="outline" size="icon" className="rounded-full text-slate-600" onClick={() => alert("Settings coming soon!")}>
             <Settings className="w-5 h-5" />
           </Button>
-          <Button variant="outline" size="icon" className="rounded-full text-slate-600 hidden sm:flex">
+          <Button variant="outline" size="icon" className="rounded-full text-slate-600 hidden sm:flex" onClick={() => alert("Logged out (demo)")}>
             <LogOut className="w-5 h-5" />
           </Button>
         </section>
@@ -89,7 +91,7 @@ export default function ProfilePage() {
                 
                 <div className="mt-2 pt-2 border-t border-slate-100 flex items-end justify-between">
                   <div>
-                    <p className="text-xs text-slate-500 line-through mb-0.5">RM {(deal.price * (1 + deal.discountPercent / 100)).toFixed(2)}</p>
+                    <p className="text-xs text-slate-500 line-through mb-0.5">RM {(deal.price / (1 - deal.discountPercent / 100)).toFixed(2)}</p>
                     <p className="text-lg font-bold text-slate-900 leading-none">RM {deal.price.toFixed(2)}</p>
                   </div>
                   

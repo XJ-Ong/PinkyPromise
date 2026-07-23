@@ -1,7 +1,7 @@
 "use client";
 
-import Link from "next/link";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { useState, useEffect, useCallback } from "react";
 import { scenarios } from "@/data/scenarios";
 import { Card, CardContent } from "@/components/ui/card";
@@ -129,15 +129,22 @@ export default function UploadPage() {
             {scenarios.map((scenario) => (
               <button
                 key={scenario.id}
+                type="button"
                 onClick={() => handleScenarioSelect(scenario.id)}
                 data-testid={`scenario-${scenario.id}`}
-                className="block w-full text-left"
+                className="block w-full text-left touch-manipulation select-none active:scale-[0.98] transition-transform focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-xl"
               >
                 <Card className="hover:border-primary hover:shadow-md transition-all rounded-xl cursor-pointer bg-white group">
                   <CardContent className="p-4 flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-lg bg-pink-100 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
-                        <Camera className="w-6 h-6" />
+                      <div className="w-12 h-12 rounded-lg bg-pink-100 overflow-hidden flex-shrink-0">
+                        <Image
+                          src={scenario.thumbnail}
+                          alt={scenario.label}
+                          width={48}
+                          height={48}
+                          className="w-full h-full object-cover group-hover:scale-110 transition-transform"
+                        />
                       </div>
                       <div>
                         <p className="font-semibold text-slate-900">{scenario.label}</p>

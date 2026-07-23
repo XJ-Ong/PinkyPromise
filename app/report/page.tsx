@@ -1,18 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { Suspense, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ArrowLeft, Send, CheckCircle2 } from "lucide-react";
 
-export default function ReportPage({
-  searchParams,
-}: {
-  searchParams: { context?: string };
-}) {
-  const context = searchParams.context;
+function ReportPageContent() {
+  const searchParams = useSearchParams();
+  const context = searchParams.get("context");
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [formData, setFormData] = useState({
     productName: "",
@@ -144,5 +142,17 @@ export default function ReportPage({
         </Card>
       )}
     </main>
+  );
+}
+
+export default function ReportPage() {
+  return (
+    <Suspense fallback={
+      <main className="container mx-auto px-4 py-10 flex flex-col items-center justify-center min-h-[50vh]">
+        <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+      </main>
+    }>
+      <ReportPageContent />
+    </Suspense>
   );
 }

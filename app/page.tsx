@@ -4,7 +4,9 @@ import { deals } from "@/data/deals";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Bell, UploadCloud, CheckCircle2, ChevronRight, Tag } from "lucide-react";
+import { Bell, UploadCloud, CheckCircle2, ChevronRight, Tag, Info, Calculator, Users, type LucideIcon } from "lucide-react";
+
+const ICONS: Record<string, LucideIcon> = { info: Info, calculator: Calculator, users: Users };
 
 export default function Home() {
   return (
@@ -41,6 +43,7 @@ export default function Home() {
           {insights.map((insight) => (
             <Card key={insight.id} data-testid={`insight-${insight.id}`} className="min-w-[260px] md:min-w-0 snap-center shrink-0 border-slate-200 hover:border-primary/30 transition-colors shadow-sm rounded-xl">
               <CardHeader className="pb-2">
+                {(() => { const Icon = ICONS[insight.icon]; return Icon ? <Icon className="w-5 h-5 text-primary mb-2" /> : null; })()}
                 <CardTitle className="text-base text-slate-900 line-clamp-1">{insight.title}</CardTitle>
               </CardHeader>
               <CardContent>

@@ -3,7 +3,6 @@
 import { useState, useMemo } from "react";
 import Link from "next/link";
 import { deals } from "@/data/deals";
-import { CommunityDeal } from "@/lib/types";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -50,7 +49,7 @@ export default function CommunityPage() {
         <h1 className="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight">Community Hub</h1>
         
         {/* Add Community Deal Button (web) */}
-        <div data-testid="add-deal-button" className="hidden md:block">
+        <div data-testid="add-deal-button-desktop" className="hidden md:block">
           <Link href="/report" className="inline-flex items-center justify-center h-9 px-2.5 gap-1.5 rounded-full shadow-md font-semibold bg-primary text-primary-foreground hover:bg-primary/80 transition-colors">
             <Plus className="w-5 h-5" />
             Add Community Deal
@@ -73,7 +72,7 @@ export default function CommunityPage() {
             />
           </section>
 
-          <section data-testid="price-range-filter" className="sm:w-[200px] shrink-0">
+          <section data-testid="sort-filter" className="sm:w-[200px] shrink-0">
             <Select value={sortBy} onValueChange={(value) => setSortBy(value as "recent" | "savings")}>
               <SelectTrigger data-testid="sort-select" className="h-12 bg-white border-slate-200 rounded-full shadow-sm w-full">
                 <div className="flex items-center gap-2 text-slate-600">
@@ -137,7 +136,7 @@ export default function CommunityPage() {
                   
                   <div className="mt-auto pt-4 border-t border-slate-100 flex items-end justify-between">
                     <div>
-                      <p className="text-xs text-slate-500 line-through mb-0.5">RM {(deal.price * (1 + deal.discountPercent / 100)).toFixed(2)}</p>
+                      <p className="text-xs text-slate-500 line-through mb-0.5">RM {(deal.price / (1 - deal.discountPercent / 100)).toFixed(2)}</p>
                       <p className="text-xl font-bold text-slate-900">RM {deal.price.toFixed(2)}</p>
                     </div>
                     
@@ -156,7 +155,7 @@ export default function CommunityPage() {
       </section>
 
       {/* Floating Action Button (mobile) */}
-      <div data-testid="add-deal-button" className="md:hidden fixed bottom-[84px] right-4 z-40">
+      <div data-testid="add-deal-button-mobile" className="md:hidden fixed bottom-[84px] right-4 z-40">
         <Link href="/report" className="flex items-center justify-center w-14 h-14 rounded-full shadow-lg bg-primary hover:bg-pink-600 text-white transition-colors">
           <Plus className="w-6 h-6" />
         </Link>

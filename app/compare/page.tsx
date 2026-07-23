@@ -1,20 +1,18 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { Suspense, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { scenarios } from "@/data/scenarios";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
-import { AlertTriangle, CheckCircle2, SearchX, ShieldCheck, ArrowRight, Flag } from "lucide-react";
+import { AlertTriangle, CheckCircle2, SearchX, ShieldCheck, Flag, Star } from "lucide-react";
 
-export default function ComparePage({
-  searchParams,
-}: {
-  searchParams: { scenario?: string };
-}) {
-  const scenarioId = searchParams.scenario as "A" | "B" | "C" | undefined;
+function ComparePageContent() {
+  const searchParams = useSearchParams();
+  const scenarioId = searchParams.get("scenario") as "A" | "B" | "C" | null;
   const scenario = scenarios.find((s) => s.id === scenarioId);
   const [showCommunityConfirmation, setShowCommunityConfirmation] = useState(false);
 
@@ -31,8 +29,9 @@ export default function ComparePage({
   }
 
   // State A - Pink Tax
-  if (scenario.type === "pink_tax" && scenario.alternative && scenario.taxPercent) {
+  if (scenario.type === "pink_tax" && scenario.alternative && typeof scenario.taxPercent === "number") {
     const savings = scenario.alternative.price - scenario.product.price;
+    const percentOff = Math.round((Math.abs(savings) / scenario.product.price) * 100);
     return (
       <main className="container mx-auto px-4 py-6 md:py-10 space-y-6 pb-24 md:pb-10 max-w-4xl">
         {/* Stepper */}
@@ -75,7 +74,7 @@ export default function ComparePage({
               </div>
               <div className="flex justify-between py-1">
                 <span className="text-slate-500">Rating</span>
-                <span className="font-medium flex items-center">⭐ {scenario.product.rating}</span>
+                <span className="font-medium flex items-center"><Star className="w-4 h-4 fill-amber-400 text-amber-400" /> {scenario.product.rating}</span>
               </div>
             </CardContent>
           </Card>
@@ -101,7 +100,7 @@ export default function ComparePage({
               </div>
               <div className="flex justify-between py-1">
                 <span className="text-slate-500">Rating</span>
-                <span className="font-medium flex items-center">⭐ {scenario.alternative.rating}</span>
+                <span className="font-medium flex items-center"><Star className="w-4 h-4 fill-amber-400 text-amber-400" /> {scenario.alternative.rating}</span>
               </div>
             </CardContent>
           </Card>
@@ -110,7 +109,7 @@ export default function ComparePage({
         {/* Savings Callout */}
         <div data-testid="savings-callout" className="bg-primary/10 rounded-xl p-4 text-center">
           <p className="text-primary font-bold text-lg">
-            You Save RM {Math.abs(savings).toFixed(2)} — that&apos;s {scenario.taxPercent}% off!
+            You Save RM {Math.abs(savings).toFixed(2)} — that&apos;s {percentOff}% off!
           </p>
         </div>
 
@@ -176,7 +175,7 @@ export default function ComparePage({
               </div>
               <div className="flex justify-between py-1">
                 <span className="text-slate-500">Rating</span>
-                <span className="font-medium flex items-center">⭐ {scenario.product.rating}</span>
+                <span className="font-medium flex items-center"><Star className="w-4 h-4 fill-amber-400 text-amber-400" /> {scenario.product.rating}</span>
               </div>
             </CardContent>
           </Card>
@@ -203,7 +202,7 @@ export default function ComparePage({
                 </div>
                 <div className="flex justify-between py-1">
                   <span className="text-slate-500">Rating</span>
-                  <span className="font-medium flex items-center">⭐ {scenario.alternative.rating}</span>
+                  <span className="font-medium flex items-center"><Star className="w-4 h-4 fill-amber-400 text-amber-400" /> {scenario.alternative.rating}</span>
                 </div>
               </CardContent>
             </Card>
@@ -270,4 +269,16 @@ export default function ComparePage({
   }
 
   return null;
+}
+
+export default function ComparePage() {
+  return (
+    <Suspense fallback={
+      <main className="container mx-auto px-4 py-10 flex flex-col items-center justify-center min-h-[50vh]">
+        <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+      </main>
+    }>
+      <ComparePageContent />
+    </Suspense>
+  );
 }
