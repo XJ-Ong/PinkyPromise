@@ -1,10 +1,10 @@
 import { MockProfile } from "@/lib/types";
 
 export const mockProfile: MockProfile = {
-  name: "Sarah Tan",
-  avatar: "/images/profile/avatar.svg",
+  name: "Testuser1",
+  avatar: "/images/profile/avatar.png",
   memberSince: "2026-01-15",
   productsChecked: 42,
   reportsSubmitted: 8,
-  totalSavedRM: 156.50,
+  pinkTaxAlertsFound: 6,
 };

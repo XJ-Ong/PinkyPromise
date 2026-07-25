@@ -124,8 +124,8 @@ export default function UploadPage() {
       {/* Scenario Selector */}
       {!isProcessing && (
         <section className="space-y-4">
-          <h2 className="text-lg font-bold text-slate-900">Select a Sample Product</h2>
-          <div className="grid gap-3">
+          <h2 className="text-lg font-bold text-slate-900">Choose a Sample Photo</h2>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             {scenarios.map((scenario) => (
               <button
                 key={scenario.id}
@@ -135,23 +135,17 @@ export default function UploadPage() {
                 className="block w-full text-left touch-manipulation select-none active:scale-[0.98] transition-transform focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-xl"
               >
                 <Card className="hover:border-primary hover:shadow-md transition-all rounded-xl cursor-pointer bg-white group">
-                  <CardContent className="p-4 flex items-center justify-between">
-                    <div className="flex items-center gap-4">
-                      <div className="w-12 h-12 rounded-lg bg-pink-100 overflow-hidden flex-shrink-0">
-                        <Image
-                          src={scenario.thumbnail}
-                          alt={scenario.label}
-                          width={48}
-                          height={48}
-                          className="w-full h-full object-cover group-hover:scale-110 transition-transform"
-                        />
-                      </div>
-                      <div>
-                        <p className="font-semibold text-slate-900">{scenario.label}</p>
-                        <p className="text-sm text-slate-500">View comparison result</p>
-                      </div>
+                  <CardContent className="p-3 flex flex-col items-center gap-2">
+                    <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-lg bg-pink-100 overflow-hidden flex-shrink-0 border border-slate-200">
+                      <Image
+                        src={scenario.thumbnail}
+                        alt={scenario.label}
+                        width={80}
+                        height={80}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform"
+                      />
                     </div>
-                    <CheckCircle2 className="w-5 h-5 text-slate-300 group-hover:text-primary transition-colors" />
+                    <p className="font-semibold text-slate-900 text-sm text-center leading-tight">{scenario.label}</p>
                   </CardContent>
                 </Card>
               </button>

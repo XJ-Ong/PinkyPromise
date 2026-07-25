@@ -5,11 +5,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Bell, UploadCloud, CheckCircle2, ChevronRight, Tag, Info, Calculator, Users, type LucideIcon } from "lucide-react";
+import RequireLogin from "@/components/auth/RequireLogin";
 
 const ICONS: Record<string, LucideIcon> = { info: Info, calculator: Calculator, users: Users };
 
 export default function Home() {
   return (
+    <RequireLogin>
     <main className="container mx-auto px-4 py-6 md:py-10 space-y-8 pb-24 md:pb-10 max-w-5xl">
       {/* Header (visible on mobile only) */}
       <header className="flex items-center justify-between md:hidden mb-2">
@@ -41,7 +43,7 @@ export default function Home() {
         </div>
         <div className="flex overflow-x-auto pb-4 -mx-4 px-4 md:mx-0 md:px-0 md:grid md:grid-cols-3 gap-4 snap-x snap-mandatory hide-scrollbar">
           {insights.map((insight) => (
-            <Card key={insight.id} data-testid={`insight-${insight.id}`} className="min-w-[260px] md:min-w-0 snap-center shrink-0 border-slate-200 hover:border-primary/30 transition-colors shadow-sm rounded-xl">
+            <Card key={insight.id} data-testid={`insight-${insight.id}`} className="w-[70%] max-w-[220px] md:w-auto md:max-w-none md:min-w-0 snap-center shrink-0 border-slate-200 hover:border-primary/30 transition-colors shadow-sm rounded-xl">
               <CardHeader className="pb-2">
                 {(() => { const Icon = ICONS[insight.icon]; return Icon ? <Icon className="w-5 h-5 text-primary mb-2" /> : null; })()}
                 <CardTitle className="text-base text-slate-900 line-clamp-1">{insight.title}</CardTitle>
@@ -57,7 +59,7 @@ export default function Home() {
       {/* Recently Added Community Deals */}
       <section className="space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-xl font-bold text-slate-900">Community Deals</h2>
+          <h2 className="text-xl font-bold text-slate-900">Community Price Reports</h2>
           <Link href="/community" data-testid="see-all-deals" className="inline-flex items-center text-primary hover:text-pink-600 hover:bg-pink-50 p-0 h-auto font-medium transition-colors">
             See all <ChevronRight className="w-4 h-4 ml-1" />
           </Link>
@@ -95,5 +97,6 @@ export default function Home() {
         </div>
       </section>
     </main>
+    </RequireLogin>
   );
 }

@@ -38,7 +38,7 @@ function ReportPageContent() {
       </Link>
 
       <div className="space-y-2">
-        <h1 className="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight">Report a Better Price</h1>
+        <h1 className="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight">Report a Price</h1>
         <p className="text-slate-500">Help the community by sharing fair-priced alternatives you&apos;ve found.</p>
       </div>
 

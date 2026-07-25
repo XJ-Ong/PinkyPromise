@@ -12,17 +12,17 @@ import { AlertTriangle, CheckCircle2, SearchX, ShieldCheck, Flag, Star } from "l
 
 function ComparePageContent() {
   const searchParams = useSearchParams();
-  const scenarioId = searchParams.get("scenario") as "A" | "B" | "C" | null;
+  const scenarioId = searchParams.get("scenario") as "A" | "B" | "C" | "D" | "E" | null;
   const scenario = scenarios.find((s) => s.id === scenarioId);
   const [showCommunityConfirmation, setShowCommunityConfirmation] = useState(false);
 
   if (!scenario) {
     return (
       <main className="container mx-auto px-4 py-10 flex flex-col items-center justify-center min-h-[50vh]">
-        <SearchX className="w-16 h-16 text-slate-300 mb-4" />
-        <h1 className="text-xl font-bold text-slate-900 mb-4">No scenario selected</h1>
+        <h1 className="text-xl font-bold text-slate-900 mb-4">See how products compare</h1>
+        <p className="text-slate-500 text-center max-w-md mb-6">This is where you&apos;ll see a side-by-side price comparison after checking a product — including whether it&apos;s a fair price or a pink-tax markup.</p>
         <Link href="/upload" className="inline-flex items-center justify-center rounded-lg border border-border bg-background px-4 py-2 text-sm font-medium hover:bg-muted transition-colors">
-          Go back to Upload
+          Start a Check
         </Link>
       </main>
     );
@@ -116,16 +116,16 @@ function ComparePageContent() {
         {/* Price Breakdown Illustration */}
         <div data-testid="price-breakdown" className="flex flex-col items-center py-4">
           <div className="w-full max-w-sm h-6 rounded-full bg-slate-200 overflow-hidden flex relative mb-2">
-            <div className="bg-slate-400 h-full w-[80%] transition-all"></div>
-            <div className="bg-destructive h-full w-[20%] transition-all"></div>
+            <div className="bg-slate-400 h-full transition-all" style={{ width: `${100 - percentOff}%` }}></div>
+            <div className="bg-destructive h-full transition-all" style={{ width: `${percentOff}%` }}></div>
           </div>
-          <p className="text-xs text-slate-500 font-medium">80% base cost / <span className="text-destructive">20% pink markup</span></p>
+          <p className="text-xs text-slate-500 font-medium">{100 - percentOff}% base cost / <span className="text-destructive">{percentOff}% pink markup</span></p>
         </div>
 
         {/* CTA */}
         <Link href={`/report?context=${scenario.id}`} data-testid="report-cta" className="inline-flex items-center justify-center w-full sm:w-auto sm:mx-auto rounded-full h-12 bg-primary text-primary-foreground hover:bg-primary/80 font-semibold transition-colors">
           <Flag className="w-5 h-5 mr-2" />
-          Report a Better Price
+          Report a Price
         </Link>
       </main>
     );

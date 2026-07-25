@@ -10,9 +10,9 @@ export interface Product {
 export type ScenarioType = "pink_tax" | "fair_price" | "no_match";
 
 export interface Scenario {
-  id: "A" | "B" | "C";
+  id: "A" | "B" | "C" | "D" | "E";
   type: ScenarioType;
-  label: string;               // e.g. "Clear Pink Tax"
+  label: string;               // e.g. "Smooth Touch Floral Razor"
   thumbnail: string;
   product: Product;
   alternative?: Product;       // absent for "no_match"
@@ -43,5 +43,5 @@ export interface MockProfile {
   memberSince: string;
   productsChecked: number;
   reportsSubmitted: number;
-  totalSavedRM: number;
+  pinkTaxAlertsFound: number;
 }

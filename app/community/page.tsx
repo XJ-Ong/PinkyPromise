@@ -45,16 +45,18 @@ export default function CommunityPage() {
 
   return (
     <main className="container mx-auto px-4 py-6 md:py-10 pb-28 md:pb-10 max-w-5xl relative min-h-screen">
-      <div className="flex flex-col md:flex-row md:items-center justify-between mb-6 md:mb-8 gap-4">
-        <h1 className="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight">Community Hub</h1>
-        
-        {/* Add Community Deal Button (web) */}
-        <div data-testid="add-deal-button-desktop" className="hidden md:block">
-          <Link href="/report" className="inline-flex items-center justify-center h-9 px-2.5 gap-1.5 rounded-full shadow-md font-semibold bg-primary text-primary-foreground hover:bg-primary/80 transition-colors">
-            <Plus className="w-5 h-5" />
-            Add Community Deal
-          </Link>
+      <div className="mb-6 md:mb-8">
+        <div className="flex items-center justify-between gap-4">
+          <h1 className="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight">Community Hub</h1>
+          {/* Add Community Deal Button (web) */}
+          <div data-testid="add-deal-button-desktop" className="hidden md:block">
+            <Link href="/report" className="inline-flex items-center justify-center h-9 px-2.5 gap-1.5 rounded-full shadow-md font-semibold bg-primary text-primary-foreground hover:bg-primary/80 transition-colors">
+              <Plus className="w-5 h-5" />
+              Report a Price
+            </Link>
+          </div>
         </div>
+        <p className="text-slate-500 text-sm md:text-base mt-2 max-w-2xl">Browse price reports shared by the community — real people flagging where a product is fairly priced or where they found a cheaper, equivalent alternative.</p>
       </div>
 
       <div className="space-y-4 mb-8">
@@ -64,7 +66,7 @@ export default function CommunityPage() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
             <Input 
               type="text" 
-              placeholder="Search deals..." 
+              placeholder="Search price reports..." 
               data-testid="search-input" 
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -108,11 +110,11 @@ export default function CommunityPage() {
         </section>
       </div>
 
-      {/* Deal List */}
+      {/* Price Report List */}
       <section>
         {filteredAndSortedDeals.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-slate-500">No deals found matching your criteria.</p>
+            <p className="text-slate-500">No price reports found matching your criteria.</p>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

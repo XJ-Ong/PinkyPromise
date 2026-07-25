@@ -1,16 +1,20 @@
 "use client";
 
 import { mockProfile } from "@/data/profile";
-import { deals } from "@/data/deals";
+import { myReports } from "@/data/myReports";
 import { Card, CardContent } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Settings, CheckCircle2, Tag, LogOut, Heart, Award, Wallet } from "lucide-react";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Settings, CheckCircle2, Tag, LogOut, Heart, Award, AlertTriangle } from "lucide-react";
 
 export default function ProfilePage() {
-  // Get first 2 deals as "my reports" for demo
-  const myReports = deals.slice(0, 2);
+  const router = useRouter();
+  const [showAllReports, setShowAllReports] = useState(false);
+  const allMyReports = myReports;
+  const reportsSubmittedCount = allMyReports.length;
 
   return (
     <main className="container mx-auto px-4 py-6 md:py-10 pb-28 md:pb-10 max-w-4xl space-y-8">
@@ -18,7 +22,7 @@ export default function ProfilePage() {
       <div className="flex justify-between items-start">
         <section data-testid="profile-header" className="flex items-center gap-4">
           <Avatar data-testid="avatar" className="w-20 h-20 border-4 border-white shadow-sm">
-            <AvatarImage src="/images/avatar.jpg" alt={mockProfile.name} />
+            <AvatarImage src="/images/profile/avatar.png" alt={mockProfile.name} />
             <AvatarFallback className="bg-primary/10 text-primary text-2xl font-bold">
               {mockProfile.name.split(" ").map((n) => n[0]).join("")}
             </AvatarFallback>
@@ -33,7 +37,7 @@ export default function ProfilePage() {
           <Button variant="outline" size="icon" className="rounded-full text-slate-600" onClick={() => alert("Settings coming soon!")}>
             <Settings className="w-5 h-5" />
           </Button>
-          <Button variant="outline" size="icon" className="rounded-full text-slate-600 hidden sm:flex" onClick={() => alert("Logged out (demo)")}>
+          <Button variant="outline" size="icon" className="rounded-full text-slate-600 hidden sm:flex" onClick={() => { localStorage.removeItem("pp_logged_in"); router.push("/login"); }}>
             <LogOut className="w-5 h-5" />
           </Button>
         </section>
@@ -55,15 +59,15 @@ export default function ProfilePage() {
               <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center mb-3">
                 <Award className="w-5 h-5 text-amber-300" />
               </div>
-              <p className="text-2xl md:text-3xl font-bold mb-1">{mockProfile.reportsSubmitted}</p>
+              <p className="text-2xl md:text-3xl font-bold mb-1">{reportsSubmittedCount}</p>
               <p className="text-xs md:text-sm text-slate-300 font-medium">Reports Submitted</p>
             </div>
             <div className="flex flex-col items-center justify-center text-center px-2">
               <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center mb-3">
-                <Wallet className="w-5 h-5 text-green-300" />
+                <AlertTriangle className="w-5 h-5 text-green-300" />
               </div>
-              <p className="text-2xl md:text-3xl font-bold mb-1">RM {mockProfile.totalSavedRM.toFixed(0)}</p>
-              <p className="text-xs md:text-sm text-slate-300 font-medium">Total Saved</p>
+              <p className="text-2xl md:text-3xl font-bold mb-1">{mockProfile.pinkTaxAlertsFound}</p>
+              <p className="text-xs md:text-sm text-slate-300 font-medium">Pink Tax Alerts</p>
             </div>
           </CardContent>
         </Card>
@@ -73,7 +77,7 @@ export default function ProfilePage() {
       <section className="space-y-4">
         <h2 className="text-xl font-bold text-slate-900">My Reports</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {myReports.map((deal) => (
+          {(showAllReports ? allMyReports : allMyReports.slice(0, 3)).map((deal) => (
             <Card key={deal.id} data-testid={`my-report-${deal.id}`} className="flex flex-row overflow-hidden border-slate-200 shadow-sm hover:shadow-md transition-all group bg-white rounded-xl">
               <div className="w-24 bg-slate-50 border-r border-slate-100 flex items-center justify-center group-hover:bg-pink-50/30 transition-colors">
                 <Tag className="w-8 h-8 text-slate-300 group-hover:text-pink-300 transition-colors" />
@@ -103,6 +107,17 @@ export default function ProfilePage() {
             </Card>
           ))}
         </div>
+        {allMyReports.length > 3 && (
+          <div className="text-center">
+            <Button
+              variant="outline"
+              onClick={() => setShowAllReports(!showAllReports)}
+              className="text-sm text-slate-600"
+            >
+              {showAllReports ? "Show less" : `Show all ${allMyReports.length} reports`}
+            </Button>
+          </div>
+        )}
       </section>
     </main>
   );
