@@ -16,6 +16,7 @@ export const scenarios: Scenario[] = [
     },
     alternative: {
       name: "Classic Grip Standard Razor",
+      image: "/images/scenarios/a-product.png",
       price: 6.00,
       store: "HealthMart",
       unitSize: "Pack of 4",
@@ -38,6 +39,7 @@ export const scenarios: Scenario[] = [
     },
     alternative: {
       name: "Active Sport Body Spray",
+      image: "/images/scenarios/b-product.png",
       price: 5.00,
       store: "FreshMart",
       unitSize: "150 ml",
@@ -60,6 +62,7 @@ export const scenarios: Scenario[] = [
     },
     alternative: {
       name: "Utility Travel Toiletry Kit",
+      image: "/images/scenarios/c-product.png",
       price: 10.00,
       store: "TravelCo",
       unitSize: "1 pouch",
@@ -82,6 +85,7 @@ export const scenarios: Scenario[] = [
     },
     alternative: {
       name: "FreshCare Body Wash",
+      image: "/images/scenarios/d-product.png",
       price: 15.90,
       store: "FreshCare",
       unitSize: "500 ml",
