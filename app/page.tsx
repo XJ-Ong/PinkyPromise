@@ -1,15 +1,31 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { insights } from "@/data/insights";
-import { deals } from "@/data/deals";
+import { getAllDeals } from "@/lib/communityStore";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Bell, UploadCloud, CheckCircle2, ChevronRight, Tag, Info, Calculator, Users, type LucideIcon } from "lucide-react";
+import ProductImage from "@/components/ui/ProductImage";
+import { CommunityDeal } from "@/lib/types";
+import { Bell, UploadCloud, CheckCircle2, ChevronRight, Info, Calculator, Users, type LucideIcon } from "lucide-react";
 import RequireLogin from "@/components/auth/RequireLogin";
 
 const ICONS: Record<string, LucideIcon> = { info: Info, calculator: Calculator, users: Users };
 
 export default function Home() {
+  const [dealsList, setDealsList] = useState<CommunityDeal[]>([]);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- hydration-safe: localStorage unavailable during SSR
+    setDealsList(getAllDeals());
+  }, []);
+
+  const recentDeals = [...dealsList]
+    .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+    .slice(0, 4);
+
   return (
     <RequireLogin>
     <main className="container mx-auto px-4 py-6 md:py-10 space-y-8 pb-24 md:pb-10 max-w-5xl">
@@ -43,15 +59,25 @@ export default function Home() {
         </div>
         <div className="flex overflow-x-auto pb-4 -mx-4 px-4 md:mx-0 md:px-0 md:grid md:grid-cols-3 gap-4 snap-x snap-mandatory hide-scrollbar">
           {insights.map((insight) => (
-            <Card key={insight.id} data-testid={`insight-${insight.id}`} className="w-[70%] max-w-[220px] md:w-auto md:max-w-none md:min-w-0 snap-center shrink-0 border-slate-200 hover:border-primary/30 transition-colors shadow-sm rounded-xl">
-              <CardHeader className="pb-2">
-                {(() => { const Icon = ICONS[insight.icon]; return Icon ? <Icon className="w-5 h-5 text-primary mb-2" /> : null; })()}
-                <CardTitle className="text-base text-slate-900 line-clamp-1">{insight.title}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-slate-600 line-clamp-2">{insight.description}</p>
-              </CardContent>
-            </Card>
+            <a
+              key={insight.id}
+              href={insight.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              data-testid={`insight-${insight.id}`}
+              className="w-[70%] max-w-[220px] md:w-auto md:max-w-none md:min-w-0 snap-center shrink-0 block"
+            >
+              <Card className="border-slate-200 hover:border-primary/30 transition-colors shadow-sm rounded-xl h-full">
+                <CardHeader className="pb-2">
+                  {(() => { const Icon = ICONS[insight.icon]; return Icon ? <Icon className="w-5 h-5 text-primary mb-2" /> : null; })()}
+                  <CardTitle className="text-base text-slate-900 line-clamp-1">{insight.title}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-slate-600 line-clamp-2">{insight.description}</p>
+                  <p className="text-xs text-slate-400 mt-2">{insight.source}</p>
+                </CardContent>
+              </Card>
+            </a>
           ))}
         </div>
       </section>
@@ -65,13 +91,19 @@ export default function Home() {
           </Link>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {deals.slice(0, 4).map((deal) => (
+          {recentDeals.map((deal) => (
             <Card key={deal.id} data-testid={`deal-${deal.id}`} className="flex flex-row overflow-hidden border-slate-200 shadow-sm hover:shadow-md transition-shadow rounded-xl bg-white">
-              <div className="w-24 sm:w-28 bg-slate-50 flex-shrink-0 flex items-center justify-center border-r border-slate-100">
-                 <Tag className="w-8 h-8 text-slate-300" />
+              <div className="w-24 sm:w-28 bg-slate-50 shrink-0 border-r border-slate-100 overflow-hidden">
+                <ProductImage
+                  src={deal.image}
+                  alt={deal.productName}
+                  width={112}
+                  height={112}
+                  className="w-full h-full object-cover"
+                />
               </div>
-              <div className="p-3 sm:p-4 flex-1 flex flex-col justify-between">
-                <div>
+              <div className="p-3 sm:p-4 flex-1 flex flex-col justify-between min-w-0">
+                <div className="min-w-0">
                   <div className="flex justify-between items-start gap-2">
                     <h3 className="font-semibold text-slate-900 line-clamp-1 flex-1">{deal.productName}</h3>
                     {deal.verified && (

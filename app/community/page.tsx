@@ -1,13 +1,15 @@
 "use client";
 
-import { useState, useMemo } from "react";
-import Link from "next/link";
-import { deals } from "@/data/deals";
+import { useState, useMemo, useEffect } from "react";
+import { getAllDeals } from "@/lib/communityStore";
+import { CommunityDeal } from "@/lib/types";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Search, Plus, CheckCircle2, SlidersHorizontal, Tag } from "lucide-react";
+import ProductImage from "@/components/ui/ProductImage";
+import DealDetailModal from "@/components/community/DealDetailModal";
+import { Search, CheckCircle2, SlidersHorizontal } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 const categories = ["All", "Personal Care", "Household", "Clothing", "Other"] as const;
@@ -17,9 +19,16 @@ export default function CommunityPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<Category>("All");
   const [sortBy, setSortBy] = useState<"recent" | "savings">("recent");
+  const [dealsList, setDealsList] = useState<CommunityDeal[]>([]);
+  const [selectedDeal, setSelectedDeal] = useState<CommunityDeal | null>(null);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- hydration-safe: localStorage unavailable during SSR
+    setDealsList(getAllDeals());
+  }, []);
 
   const filteredAndSortedDeals = useMemo(() => {
-    let result = [...deals];
+    let result = [...dealsList];
 
     if (selectedCategory !== "All") {
       result = result.filter((deal) => deal.category === selectedCategory);
@@ -41,20 +50,13 @@ export default function CommunityPage() {
     }
 
     return result;
-  }, [searchQuery, selectedCategory, sortBy]);
+  }, [searchQuery, selectedCategory, sortBy, dealsList]);
 
   return (
     <main className="container mx-auto px-4 py-6 md:py-10 pb-28 md:pb-10 max-w-5xl relative min-h-screen">
       <div className="mb-6 md:mb-8">
         <div className="flex items-center justify-between gap-4">
           <h1 className="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight">Community Hub</h1>
-          {/* Add Community Deal Button (web) */}
-          <div data-testid="add-deal-button-desktop" className="hidden md:block">
-            <Link href="/report" className="inline-flex items-center justify-center h-9 px-2.5 gap-1.5 rounded-full shadow-md font-semibold bg-primary text-primary-foreground hover:bg-primary/80 transition-colors">
-              <Plus className="w-5 h-5" />
-              Report a Price
-            </Link>
-          </div>
         </div>
         <p className="text-slate-500 text-sm md:text-base mt-2 max-w-2xl">Browse price reports shared by the community — real people flagging where a product is fairly priced or where they found a cheaper, equivalent alternative.</p>
       </div>
@@ -119,9 +121,9 @@ export default function CommunityPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filteredAndSortedDeals.map((deal) => (
-              <Card key={deal.id} data-testid={`deal-card-${deal.id}`} className="flex flex-col overflow-hidden border-slate-200 shadow-sm hover:shadow-md transition-all hover:border-primary/50 group bg-white rounded-xl">
+              <Card key={deal.id} data-testid={`deal-card-${deal.id}`} onClick={() => setSelectedDeal(deal)} className="flex flex-col overflow-hidden border-slate-200 shadow-sm hover:shadow-md transition-all hover:border-primary/50 group bg-white rounded-xl cursor-pointer">
                 <div className="h-32 bg-slate-50 border-b border-slate-100 flex items-center justify-center group-hover:bg-pink-50/30 transition-colors">
-                  <Tag className="w-12 h-12 text-slate-300 group-hover:text-pink-300 transition-colors" />
+                  <ProductImage src={deal.image} alt={deal.productName} width={400} height={128} className="w-full h-32 object-cover" />
                 </div>
                 <CardContent className="p-5 flex-1 flex flex-col">
                   <div className="flex justify-between items-start mb-1">
@@ -134,7 +136,8 @@ export default function CommunityPage() {
                     )}
                   </div>
                   
-                  <p className="text-sm text-slate-500 mb-4">{deal.category}</p>
+                  <p className="text-sm text-slate-500 mb-1">{deal.category}</p>
+                  <p className="text-xs text-slate-400 mb-4" data-testid={`deal-store-${deal.id}`}>{deal.storeName}</p>
                   
                   <div className="mt-auto pt-4 border-t border-slate-100 flex items-end justify-between">
                     <div>
@@ -156,12 +159,9 @@ export default function CommunityPage() {
         )}
       </section>
 
-      {/* Floating Action Button (mobile) */}
-      <div data-testid="add-deal-button-mobile" className="md:hidden fixed bottom-[84px] right-4 z-40">
-        <Link href="/report" className="flex items-center justify-center w-14 h-14 rounded-full shadow-lg bg-primary hover:bg-pink-600 text-white transition-colors">
-          <Plus className="w-6 h-6" />
-        </Link>
-      </div>
+      {selectedDeal && (
+        <DealDetailModal deal={selectedDeal} onClose={() => setSelectedDeal(null)} />
+      )}
     </main>
   );
 }

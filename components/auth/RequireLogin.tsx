@@ -11,6 +11,7 @@ export default function RequireLogin({ children }: { children: React.ReactNode }
     if (localStorage.getItem("pp_logged_in") !== "true") {
       router.replace("/login");
     } else {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- hydration-safe: localStorage unavailable during SSR
       setChecked(true);
     }
   }, [router]);
