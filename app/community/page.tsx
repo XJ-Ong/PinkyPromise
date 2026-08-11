@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { getAllDeals } from "@/lib/communityStore";
 import { CommunityDeal } from "@/lib/types";
 import { Input } from "@/components/ui/input";
@@ -21,6 +21,12 @@ export default function CommunityPage() {
   const [sortBy, setSortBy] = useState<"recent" | "savings">("recent");
   const [dealsList, setDealsList] = useState<CommunityDeal[]>([]);
   const [selectedDeal, setSelectedDeal] = useState<CommunityDeal | null>(null);
+  const openerRef = useRef<HTMLElement | null>(null);
+
+  const handleCloseModal = () => {
+    setSelectedDeal(null);
+    openerRef.current?.focus();
+  };
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect -- hydration-safe: localStorage unavailable during SSR
@@ -56,7 +62,7 @@ export default function CommunityPage() {
     <main className="container mx-auto px-4 py-6 md:py-10 pb-28 md:pb-10 max-w-5xl relative min-h-screen">
       <div className="mb-6 md:mb-8">
         <div className="flex items-center justify-between gap-4">
-          <h1 className="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight">Community Hub</h1>
+          <h1 className="hidden text-3xl font-bold tracking-tight text-slate-900 md:block">Community Hub</h1>
         </div>
         <p className="text-slate-500 text-sm md:text-base mt-2 max-w-2xl">Browse price reports shared by the community — real people flagging where a product is fairly priced or where they found a cheaper, equivalent alternative.</p>
       </div>
@@ -120,47 +126,75 @@ export default function CommunityPage() {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredAndSortedDeals.map((deal) => (
-              <Card key={deal.id} data-testid={`deal-card-${deal.id}`} onClick={() => setSelectedDeal(deal)} className="flex flex-col overflow-hidden border-slate-200 shadow-sm hover:shadow-md transition-all hover:border-primary/50 group bg-white rounded-xl cursor-pointer">
-                <div className="h-32 bg-slate-50 border-b border-slate-100 flex items-center justify-center group-hover:bg-pink-50/30 transition-colors">
-                  <ProductImage src={deal.image} alt={deal.productName} width={400} height={128} className="w-full h-32 object-cover" />
-                </div>
-                <CardContent className="p-5 flex-1 flex flex-col">
-                  <div className="flex justify-between items-start mb-1">
-                    <h3 className="font-bold text-slate-900 text-lg leading-tight line-clamp-1 flex-1 pr-2">{deal.productName}</h3>
-                    {deal.verified && (
-                      <Badge className="bg-success/10 text-success hover:bg-success/20 border-none shrink-0 px-2 py-0 h-6">
-                        <CheckCircle2 className="w-3 h-3 mr-1" />
-                        Verified
-                      </Badge>
-                    )}
+            {filteredAndSortedDeals.map((deal) => {
+              const denominator = 1 - deal.discountPercent / 100;
+              const originalPrice = denominator > 0 ? deal.price / denominator : null;
+              const isDiscount = originalPrice !== null && originalPrice > deal.price;
+
+              return (
+              <button
+                key={deal.id}
+                type="button"
+                data-testid={`deal-card-${deal.id}`}
+                onClick={(e) => {
+                  openerRef.current = e.currentTarget;
+                  setSelectedDeal(deal);
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === " ") e.preventDefault();
+                }}
+                className="block w-full text-left rounded-xl focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:outline-none"
+              >
+                <Card className="flex flex-col overflow-hidden border-slate-200 shadow-sm hover:shadow-md transition-all hover:border-primary/50 group bg-white rounded-xl cursor-pointer">
+                  <div className="h-32 bg-slate-50 border-b border-slate-100 flex items-center justify-center group-hover:bg-pink-50/30 transition-colors">
+                    <ProductImage src={deal.image} alt={deal.productName} width={400} height={128} className="w-full h-32 object-cover" />
                   </div>
-                  
-                  <p className="text-sm text-slate-500 mb-1">{deal.category}</p>
-                  <p className="text-xs text-slate-400 mb-4" data-testid={`deal-store-${deal.id}`}>{deal.storeName}</p>
-                  
-                  <div className="mt-auto pt-4 border-t border-slate-100 flex items-end justify-between">
-                    <div>
-                      <p className="text-xs text-slate-500 line-through mb-0.5">RM {(deal.price / (1 - deal.discountPercent / 100)).toFixed(2)}</p>
-                      <p className="text-xl font-bold text-slate-900">RM {deal.price.toFixed(2)}</p>
+                  <CardContent className="p-5 flex-1 flex flex-col">
+                    <div className="flex justify-between items-start mb-1">
+                      <h3 className="font-bold text-slate-900 text-lg leading-tight line-clamp-1 flex-1 pr-2">{deal.productName}</h3>
+                      {deal.verified && (
+                        <Badge className="bg-success/10 text-success hover:bg-success/20 border-none shrink-0 px-2 py-0 h-6">
+                          <CheckCircle2 className="w-3 h-3 mr-1" />
+                          Verified
+                        </Badge>
+                      )}
                     </div>
-                    
-                    <div className="flex flex-col items-end">
-                      <Badge variant="secondary" className="bg-green-100 text-green-700 hover:bg-green-100 border-none font-bold text-sm px-3 py-1 mb-1">
-                        Save {deal.discountPercent}%
-                      </Badge>
-                      <p className="text-xs text-slate-400">by {deal.submitterName}</p>
+
+                    <p className="text-sm text-slate-500 mb-1">{deal.category}</p>
+                    <p className="text-xs text-slate-400 mb-4" data-testid={`deal-store-${deal.id}`}>{deal.storeName}</p>
+
+                    <div className="mt-auto pt-4 border-t border-slate-100 flex items-end justify-between">
+                      <div>
+                        {isDiscount && originalPrice !== null && (
+                          <p className="text-xs text-slate-500 line-through mb-0.5">RM {originalPrice.toFixed(2)}</p>
+                        )}
+                        <p className="text-xl font-bold text-slate-900">RM {deal.price.toFixed(2)}</p>
+                      </div>
+
+                      <div className="flex flex-col items-end">
+                        {isDiscount ? (
+                          <Badge variant="secondary" className="bg-green-100 text-green-700 hover:bg-green-100 border-none font-bold text-sm px-3 py-1 mb-1">
+                            Save {deal.discountPercent}%
+                          </Badge>
+                        ) : (
+                          <Badge variant="secondary" className="bg-slate-100 text-slate-600 hover:bg-slate-100 border-none font-bold text-sm px-3 py-1 mb-1">
+                            Price difference
+                          </Badge>
+                        )}
+                        <p className="text-xs text-slate-400">by {deal.submitterName}</p>
+                      </div>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                  </CardContent>
+                </Card>
+              </button>
+              );
+            })}
           </div>
         )}
       </section>
 
       {selectedDeal && (
-        <DealDetailModal deal={selectedDeal} onClose={() => setSelectedDeal(null)} />
+        <DealDetailModal deal={selectedDeal} onClose={handleCloseModal} />
       )}
     </main>
   );

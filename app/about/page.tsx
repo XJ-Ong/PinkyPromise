@@ -4,7 +4,7 @@ export default function AboutPage() {
   return (
     <main className="container mx-auto px-4 py-6 md:py-10 space-y-10 pb-24 md:pb-10 max-w-3xl">
       <header className="space-y-2">
-        <h1 className="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight">About Us</h1>
+        <h1 className="hidden text-3xl font-bold tracking-tight text-slate-900 md:block">About Us</h1>
         <p className="text-slate-500">Who we are and why we built PinkyPromise.</p>
       </header>
 

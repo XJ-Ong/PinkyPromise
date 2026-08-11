@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Suspense, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { getScenarioById } from "@/data/scenarios";
+import { getValidComparison } from "@/data/scenarios";
 import { mockProfile } from "@/data/profile";
 import { addDeal } from "@/lib/communityStore";
 import { getComparisonSummary } from "@/lib/comparisonSummary";
@@ -12,6 +12,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import ProductImage from "@/components/ui/ProductImage";
+import StorageWarningBanner from "@/components/ui/StorageWarningBanner";
 import { ArrowLeft, ShieldCheck, CheckCircle2, UploadCloud } from "lucide-react";
 
 interface ComparisonContext {
@@ -29,6 +30,7 @@ function ReportPageContent() {
   const targetId = searchParams.get("target");
   const compareId = searchParams.get("compare");
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [storageWarning, setStorageWarning] = useState(false);
   const [duplicate, setDuplicate] = useState<{ productName: string; storeName: string } | null>(null);
   const [formData, setFormData] = useState({
     productName: "",
@@ -38,9 +40,11 @@ function ReportPageContent() {
     price: "",
   });
   const [seededKey, setSeededKey] = useState<string | null>(null);
+  const [priceError, setPriceError] = useState<string | null>(null);
 
-  const compare = compareId ? getScenarioById(compareId) : undefined;
-  const target = targetId ? getScenarioById(targetId) : undefined;
+  const comparison = getValidComparison(targetId, compareId);
+  const compare = comparison?.compare;
+  const target = comparison?.target;
 
   const comparisonKey = targetId && compareId ? `${targetId}:${compareId}` : null;
 
@@ -52,8 +56,8 @@ function ReportPageContent() {
             <UploadCloud className="w-16 h-16 text-slate-300 mx-auto mb-4" />
             <h1 className="text-2xl font-bold text-slate-900 tracking-tight mb-2">Add to Community Hub</h1>
             <p className="text-slate-500 mb-6 max-w-md mx-auto">
-              You can only publish to the Community Hub after completing a product comparison.
-              Nothing has been filled in yet — there is nothing to publish.
+              The comparison pair is incomplete or the link is invalid — you can only
+              publish after completing a valid product comparison.
             </p>
             <Link
               href="/upload"
@@ -106,6 +110,7 @@ function ReportPageContent() {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
     setDuplicate(null);
+    setPriceError(null);
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -115,9 +120,11 @@ function ReportPageContent() {
     if (!formData.productName.trim() || !formData.material.trim() || !formData.storeName.trim()) {
       return;
     }
-    if (Number.isNaN(price) || price < 0) {
+    if (!Number.isFinite(price) || price <= 0) {
+      setPriceError("Price must be a number greater than 0.");
       return;
     }
+    setPriceError(null);
 
     const result = addDeal({
       productName: formData.productName.trim(),
@@ -138,10 +145,18 @@ function ReportPageContent() {
     });
 
     if (!result.ok) {
-      setDuplicate({ productName: result.existing.productName, storeName: result.existing.storeName });
+      if (result.reason === "invalid") {
+        setPriceError("Price must be a number greater than 0.");
+      } else {
+        setDuplicate({
+          productName: result.existing.productName,
+          storeName: result.existing.storeName,
+        });
+      }
       return;
     }
 
+    if (!result.persisted) setStorageWarning(true);
     setIsSubmitted(true);
   };
 
@@ -157,9 +172,13 @@ function ReportPageContent() {
       </Link>
 
       <div className="space-y-2">
-        <h1 className="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight">Add to Community Hub</h1>
+        <h1 className="hidden text-3xl font-bold tracking-tight text-slate-900 md:block">Add to Community Hub</h1>
         <p className="text-slate-500">Save this comparison to the Community Hub so others can benefit from what you found.</p>
       </div>
+
+      {storageWarning && (
+        <StorageWarningBanner onDismiss={() => setStorageWarning(false)} />
+      )}
 
       {isSubmitted ? (
         <Card data-testid="success-message" className="border-green-200 bg-green-50 shadow-sm rounded-xl overflow-hidden">
@@ -228,6 +247,12 @@ function ReportPageContent() {
                     <Link href="/community" className="mt-2 inline-flex items-center font-semibold text-primary underline underline-offset-2 hover:text-primary/80">
                       View existing entry in Community Hub
                     </Link>
+                  </div>
+                )}
+
+                {priceError && (
+                  <div className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800" data-testid="price-error">
+                    <p>{priceError}</p>
                   </div>
                 )}
 

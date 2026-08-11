@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import { getScenarioById } from "@/data/scenarios";
+import { getValidComparison } from "@/data/scenarios";
 import { getComparisonSummary } from "@/lib/comparisonSummary";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -15,16 +15,17 @@ function ComparePageContent() {
   const targetId = searchParams.get("target");
   const compareId = searchParams.get("compare");
   const from = searchParams.get("from");
-  const target = getScenarioById(targetId);
-  const compare = getScenarioById(compareId);
+  const comparison = getValidComparison(targetId, compareId);
+  const target = comparison?.target;
+  const compare = comparison?.compare;
 
   if (!target || !compare) {
     return (
       <main className="container mx-auto px-4 py-10 flex flex-col items-center justify-center min-h-[50vh]">
         <h1 className="text-xl font-bold text-slate-900 mb-4">See how products compare</h1>
         <p className="text-slate-500 text-center max-w-md mb-6">
-          This is where you&apos;ll see a side-by-side price comparison after checking a
-          product — including whether it&apos;s a fair price or a pink-tax markup.
+          The comparison pair is incomplete or the link is invalid — start a new
+          check to see a side-by-side price comparison.
         </p>
         <Link
           href="/upload"

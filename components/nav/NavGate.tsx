@@ -3,12 +3,18 @@
 import { usePathname } from "next/navigation";
 import TopNav from "@/components/nav/TopNav";
 import BottomNav from "@/components/nav/BottomNav";
+import MobilePageHeader from "@/components/nav/MobilePageHeader";
 
 export default function NavGate({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
   if (pathname === "/login") {
-    return <>{children}</>;
+    return (
+      <>
+        <MobilePageHeader />
+        {children}
+      </>
+    );
   }
 
   return (
@@ -16,7 +22,8 @@ export default function NavGate({ children }: { children: React.ReactNode }) {
       <div className="hidden md:block">
         <TopNav />
       </div>
-      <main className="flex-1">{children}</main>
+      <MobilePageHeader />
+      <main className="flex-1 md:pt-16">{children}</main>
       <div className="block md:hidden">
         <BottomNav />
       </div>

@@ -1,4 +1,5 @@
 import { checkHistory as seedCheckHistory } from "@/data/checkHistory";
+import { getScenarioById } from "@/data/scenarios";
 import { ComparisonRecord } from "@/lib/types";
 
 const STORAGE_KEY = "pp_check_history_v1";
@@ -7,22 +8,39 @@ interface StoredCheckHistory {
   records: ComparisonRecord[];
 }
 
+function isValidStoredRecord(x: unknown): x is ComparisonRecord {
+  if (!x || typeof x !== "object") return false;
+  const r = x as Record<string, unknown>;
+  if (typeof r.id !== "string" || !r.id) return false;
+  if (typeof r.targetScenarioId !== "string" || !getScenarioById(r.targetScenarioId)) return false;
+  if (typeof r.compareScenarioId !== "string" || !getScenarioById(r.compareScenarioId)) return false;
+  if (r.result !== "pink_tax" && r.result !== "fair_price") return false;
+  if (typeof r.taxPercent !== "number" || !Number.isFinite(r.taxPercent)) return false;
+  if (typeof r.completedAt !== "string" || Number.isNaN(new Date(r.completedAt).getTime())) return false;
+  return true;
+}
+
 function readStoredRecords(): ComparisonRecord[] {
   if (typeof window === "undefined") return [];
   try {
     const raw = window.localStorage.getItem(STORAGE_KEY);
     if (!raw) return [];
     const parsed = JSON.parse(raw) as Partial<StoredCheckHistory>;
-    return Array.isArray(parsed.records) ? parsed.records : [];
+    return Array.isArray(parsed.records) ? parsed.records.filter(isValidStoredRecord) : [];
   } catch {
     // Malformed storage falls back to seeds only — never throw.
     return [];
   }
 }
 
-function writeStoredRecords(records: ComparisonRecord[]) {
-  if (typeof window === "undefined") return;
-  window.localStorage.setItem(STORAGE_KEY, JSON.stringify({ records }));
+function writeStoredRecords(records: ComparisonRecord[]): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    window.localStorage.setItem(STORAGE_KEY, JSON.stringify({ records }));
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 function newestFirst(records: ComparisonRecord[]): ComparisonRecord[] {
@@ -50,7 +68,7 @@ export function getCheckHistory(): ComparisonRecord[] {
  */
 export function recordCompletedCheck(
   input: Omit<ComparisonRecord, "id" | "completedAt">
-): ComparisonRecord {
+): { record: ComparisonRecord; persisted: boolean } {
   const record: ComparisonRecord = {
     ...input,
     id: `check-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
@@ -58,7 +76,7 @@ export function recordCompletedCheck(
   };
 
   const records = readStoredRecords();
-  writeStoredRecords([record, ...records]);
+  const persisted = writeStoredRecords([record, ...records]);
 
-  return record;
+  return { record, persisted };
 }

@@ -2,10 +2,11 @@
 
 import { Suspense, useEffect, useState, useCallback, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { getScenarioById } from "@/data/scenarios";
+import { getScenarioById, getValidComparison } from "@/data/scenarios";
 import { recordCompletedCheck } from "@/lib/checkHistoryStore";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
+import StorageWarningBanner from "@/components/ui/StorageWarningBanner";
 import { CheckCircle2, Loader2, X } from "lucide-react";
 import Stepper from "@/components/checker/Stepper";
 import Link from "next/link";
@@ -22,10 +23,15 @@ function UploadProcessPageContent() {
   const searchParams = useSearchParams();
   const targetId = searchParams.get("target");
   const compareId = searchParams.get("compare");
-  const target = getScenarioById(targetId);
-  const compare = getScenarioById(compareId);
+  const comparison = getValidComparison(targetId, compareId);
+  const target = comparison?.target;
+  const compare = comparison?.compare;
+  // Cancel only needs a valid target-role scenario to exist (no compare
+  // picked yet, so no validated pair) — deliberately NOT getValidComparison.
+  const cancelTarget = getScenarioById(targetId);
 
   const [progress, setProgress] = useState(0);
+  const [storageWarning, setStorageWarning] = useState(false);
   const recordedRef = useRef(false);
 
   useEffect(() => {
@@ -46,18 +52,19 @@ function UploadProcessPageContent() {
     if (!target || !compare) return;
     if (recordedRef.current) return;
     recordedRef.current = true;
-    recordCompletedCheck({
+    const result = recordCompletedCheck({
       targetScenarioId: target.id,
       compareScenarioId: compare.id,
       result: target.type,
       taxPercent: target.taxPercent ?? 0,
     });
+    if (!result.persisted) setStorageWarning(true);
     router.push(`/compare?target=${target.id}&compare=${compare.id}`);
   }, [router, target, compare]);
 
   const handleCancel = useCallback(() => {
-    router.push(target ? `/upload/compare?target=${target.id}` : "/upload");
-  }, [router, target]);
+    router.push(cancelTarget ? `/upload/compare?target=${cancelTarget.id}` : "/upload");
+  }, [router, cancelTarget]);
 
   if (!target || !compare) {
     return (
@@ -79,6 +86,9 @@ function UploadProcessPageContent() {
 
   return (
     <main className="container mx-auto px-4 py-6 md:py-10 space-y-8 pb-24 md:pb-10 max-w-2xl">
+      {storageWarning && (
+        <StorageWarningBanner onDismiss={() => setStorageWarning(false)} />
+      )}
       <Stepper currentStep={3} />
 
       <section data-testid="processing-state" className="space-y-6">

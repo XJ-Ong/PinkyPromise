@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { Home, Info, UploadCloud, Users, User } from "lucide-react";
 import { isNavActive } from "@/lib/isNavActive";
@@ -9,13 +10,17 @@ export default function TopNav() {
   const pathname = usePathname();
 
   return (
-    <nav data-testid="top-nav" className="sticky top-0 z-50 w-full bg-white/80 backdrop-blur-md border-b border-slate-200">
+    <nav data-testid="top-nav" className="fixed inset-x-0 top-0 z-50 w-full border-b border-rose-200 bg-white">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-        <Link href="/" className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
-            <span className="text-white font-bold text-xl leading-none">P</span>
-          </div>
-          <span className="font-bold text-xl text-slate-900 tracking-tight">PinkyPromise</span>
+        <Link href="/" className="flex items-center" aria-label="PinkyPromise home">
+          <Image
+            src="/images/icons/pinkypromise_logo_cropped.png"
+            alt="PinkyPromise"
+            width={814}
+            height={496}
+            className="h-14 w-auto object-contain"
+            priority
+          />
         </Link>
         <ul className="flex items-center gap-1 sm:gap-2">
           <li>

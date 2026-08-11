@@ -14,6 +14,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import ProductImage from "@/components/ui/ProductImage";
+import StorageWarningBanner from "@/components/ui/StorageWarningBanner";
 import { ArrowLeft, CheckCircle2, Save, Trash2 } from "lucide-react";
 
 type SaveFailureReason = "not_found" | "duplicate" | "invalid";
@@ -33,6 +34,7 @@ export default function EditSubmissionPage() {
   const [price, setPrice] = useState("");
 
   const [saved, setSaved] = useState(false);
+  const [storageWarning, setStorageWarning] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
 
@@ -79,6 +81,9 @@ export default function EditSubmissionPage() {
   if (saved) {
     return (
       <main className="container mx-auto px-4 py-6 md:py-10 space-y-6 pb-24 md:pb-10 max-w-2xl">
+        {storageWarning && (
+          <StorageWarningBanner onDismiss={() => setStorageWarning(false)} />
+        )}
         <Card data-testid="edit-success" className="border-green-200 bg-green-50 shadow-sm rounded-xl overflow-hidden">
           <CardContent className="p-6 text-center">
             <CheckCircle2 className="w-16 h-16 text-success mx-auto mb-4" />
@@ -112,8 +117,8 @@ export default function EditSubmissionPage() {
       setError("Product name, material, and store name are required.");
       return;
     }
-    if (Number.isNaN(parsedPrice) || parsedPrice < 0) {
-      setError("Please enter a valid price of 0 or more.");
+    if (!Number.isFinite(parsedPrice) || parsedPrice <= 0) {
+      setError("Please enter a valid price greater than 0.");
       return;
     }
 
@@ -127,6 +132,7 @@ export default function EditSubmissionPage() {
 
     const result = updateMyAddedDeal(id, changes);
     if (result.ok) {
+      if (!result.persisted) setStorageWarning(true);
       setSaved(true);
       return;
     }
@@ -142,12 +148,16 @@ export default function EditSubmissionPage() {
   const handleDelete = () => {
     const result = deleteMyAddedDeal(id);
     if (result.ok) {
+      if (!result.persisted) setStorageWarning(true);
       router.push("/profile");
     }
   };
 
   return (
     <main className="container mx-auto px-4 py-6 md:py-10 space-y-6 pb-24 md:pb-10 max-w-2xl">
+      {storageWarning && (
+        <StorageWarningBanner onDismiss={() => setStorageWarning(false)} />
+      )}
       <Link
         href="/profile"
         data-testid="back-button"
@@ -158,7 +168,7 @@ export default function EditSubmissionPage() {
       </Link>
 
       <div className="space-y-2">
-        <h1 className="text-2xl md:text-3xl font-bold text-slate-900 tracking-tight">Edit Submission</h1>
+        <h1 className="hidden text-3xl font-bold tracking-tight text-slate-900 md:block">Edit Submission</h1>
         <p className="text-slate-500">Update your community submission. Size, functionality, and design are fixed product facts and cannot be changed here.</p>
       </div>
 

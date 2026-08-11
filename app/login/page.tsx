@@ -25,7 +25,7 @@ export default function LoginPage() {
         <div className="w-14 h-14 rounded-full bg-gradient-to-br from-pink-500 to-primary flex items-center justify-center shadow-lg">
           <span className="text-white font-bold text-3xl leading-none">P</span>
         </div>
-        <h1 className="text-2xl font-bold text-slate-900 tracking-tight">Log in to PinkyPromise</h1>
+        <h1 className="hidden text-2xl font-bold tracking-tight text-slate-900 md:block">Log in to PinkyPromise</h1>
       </div>
 
       {/* Login Form */}

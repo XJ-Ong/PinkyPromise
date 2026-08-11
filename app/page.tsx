@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import ProductImage from "@/components/ui/ProductImage";
 import { CommunityDeal } from "@/lib/types";
-import { Bell, UploadCloud, CheckCircle2, ChevronRight, Info, Calculator, Users, type LucideIcon } from "lucide-react";
+import { UploadCloud, CheckCircle2, ChevronRight, Info, Calculator, Users, type LucideIcon } from "lucide-react";
 import RequireLogin from "@/components/auth/RequireLogin";
 
 const ICONS: Record<string, LucideIcon> = { info: Info, calculator: Calculator, users: Users };
@@ -29,14 +29,6 @@ export default function Home() {
   return (
     <RequireLogin>
     <main className="container mx-auto px-4 py-6 md:py-10 space-y-8 pb-24 md:pb-10 max-w-5xl">
-      {/* Header (visible on mobile only) */}
-      <header className="flex items-center justify-between md:hidden mb-2">
-        <h1 className="text-2xl font-bold text-slate-900 tracking-tight">PinkyPromise</h1>
-        <Button variant="ghost" size="icon" className="rounded-full bg-white shadow-sm border border-slate-100 text-slate-600 hover:text-primary" aria-label="Notifications">
-          <Bell className="w-5 h-5" />
-        </Button>
-      </header>
-
       {/* Hero Card */}
       <section>
         <Card className="bg-gradient-to-br from-pink-500 to-primary text-white border-none shadow-lg overflow-hidden relative rounded-2xl">
