@@ -31,7 +31,7 @@ export default function AboutPage() {
         <ul className="space-y-2 text-slate-600 leading-relaxed list-disc list-inside">
           <li><strong>Female customers</strong> — save money by spotting and avoiding unjustified surcharges.</li>
           <li><strong>The general public</strong> — build awareness of retail pricing and everyday financial literacy.</li>
-          <li><strong>Our Instagram community (@pinkypromise.my)</strong> — use shareable comparison content to advocate for gender equality in pricing.</li>
+          <li><strong>Our Instagram community (<a href="https://www.instagram.com/pinkypromise.my/" target="_blank" rel="noopener noreferrer" className="underline hover:text-primary transition-colors">@pinkypromise.my</a>)</strong> — use shareable comparison content to advocate for gender equality in pricing.</li>
         </ul>
       </section>
 
